@@ -12,6 +12,7 @@
 
     body {
       margin: 0;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace
     }
 
     .i-box {
@@ -51,7 +52,7 @@
       bottom: 0;
       left: 0;
       right: 0;
-      font-size: 14px;
+      font-size: 11px;
       padding: 3px;
       background: #fff;
       color: #000;
@@ -146,7 +147,7 @@
       margin: auto;
     }
 
-    .<%= iconClassName %> {
+    .<%= className %> {
       height: 1em;
     }
 
@@ -185,7 +186,7 @@
   <% _.forEach(icons, function(icon) { %>
   <figure class="i-box" data-icon="<%= icon.name %>">
     <div class="i-box__canvas">
-      <svg class="<%= iconClassName %> <%= icon.name %>">
+      <svg class="<%= className %> <%= icon.name %>">
         <use xlink:href="<%= spritePath  %>/<%= spriteName  %>.svg#<%= icon.name %>"></use>
       </svg>
     </div>

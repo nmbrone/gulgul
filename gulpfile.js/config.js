@@ -25,14 +25,21 @@ const paths = {
 
 const tasks = {
   icons: {
-    stylesTemplate: 'template.sass', // retative to task file
-    previewTemplate: 'preview.html', // retative to task file
+    stylesTemplate: 'template.sass',
+    previewTemplate: 'preview.html',
     packs: [
       {
         name: 'icons',
-        src: path.join(paths.src.icons, 'main/*.svg'),
-        iconClassName: 'icon',
+        src: path.join(paths.src.icons, '**/*.svg'),
+        className: 'icon',
         secondaryColor: '#9B9B9B',
+        ignoreCleanupFor: /cup/,
+      },
+      {
+        name: 'icons-brand',
+        src: path.join(paths.src.icons, 'second/*.svg'),
+        className: 'icon-brand',
+        ratioPrecision: 5,
       },
     ],
   },
