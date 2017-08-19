@@ -7,7 +7,7 @@ const consolidate = require('gulp-consolidate');
 const round = require('lodash/round');
 const path = require('path');
 const errorHandler = require('../../utils/error-handler');
-const createNamedGulpTasks = require('../../utils/create-named-gulp-tasks');
+const createTasks = require('../../utils/create-tasks');
 const { paths, tasks } = require('../../config');
 
 const defaults = {
@@ -155,4 +155,4 @@ const createIconPack = options => {
     .pipe(gulp.dest(paths.dest.images));
 };
 
-createNamedGulpTasks('icons', tasks.icons.packs, createIconPack);
+createTasks('icons', tasks.icons.packs, createIconPack);
