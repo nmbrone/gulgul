@@ -52,8 +52,6 @@ SRC.scripts('**/*.js', '!/subfolder/**/*'); // => ['src/js/**/.*js', '!src/js/su
 
 ## Configuration
 
-### Tasks
-
 Before we start, you should know that some of the tasks can run child tasks. This was done in order to have the ability to build multiple icon packs or multiple CSS bundles for example.
 Configuration for child tasks usually looks like collection of objects: 
 
@@ -65,30 +63,32 @@ or arrays:
 
 These configurations marked further as type `ChildTask`.
 
-#### [`icons`](gulpfile.js/config.js#L26)
-##### `stylesTemplate: string`
-Path to styles template (relative to task js file).
+### Tasks:
 
-##### `previewTemplate: string`
-Path to preview page template (relative to task js file).
+- ### `icons`
+  ##### `stylesTemplate: string`
+  Path to styles template (relative to task js file).
 
-##### `packs: [IconPack: ChildTask][]`
-A collection of icons packs options.
+  ##### `previewTemplate: string`
+  Path to preview page template (relative to task js file).
 
-##### `IconPack.name: string`
-Name of icon pack. Also used as a name for child task. For example, if `name = 'brand'` then for this icon pack will be available separate gulp task `icons:brand`.
+  ##### `packs: [IconPack: ChildTask][]`
+  A collection of icons packs options.
 
-##### `IconPack.src: string|string[]`
-Path to *.svg files. Will be passed to the `gulp.src()`.
+  ##### `IconPack.name: string`
+  Name of icon pack. Also used as a name for child task. For example, if `name = 'brand'` then for this icon pack will be available separate gulp task `icons:brand`.
 
-##### `IconPack.className: string`
-Base css class name. Also used as a prefix for each icon in the pack.
+  ##### `IconPack.src: string|string[]`
+  Path to *.svg files. Will be passed to the `gulp.src()`.
 
-##### `IconPack.secondaryColor?: string`
-CSS color. Can be any color. During build process this color will be raplaced by 'currentColor'. This little trick gives us ability to use dual color icons. Later in css main color of icon can be set with 'fill' property, and secondary color with 'color' property.
+  ##### `IconPack.className: string`
+  Base css class name. Also used as a prefix for each icon in the pack.
 
-##### `IconPack.ignoreCleanupFor?: string|string[]|RegExp|(symbol: Cheerio) => boolean`
-Exclude some icons from cleanup process. During build process from each icon will be removed `fill`, `stroke` and `opacity` attributes. This is necessary in order to gain control over these properties from CSS. Ignored icons will be included in sprite as is.
+  ##### `IconPack.secondaryColor?: string`
+  CSS color. Can be any color. During build process this color will be raplaced by 'currentColor'. This little trick gives us ability to use dual color icons. Later in css main color of icon can be set with 'fill' property, and secondary color with 'color' property.
 
-##### `IconPack.ratioPrecision?: number`
-Default `2`. Precision for icon size ratio.
+  ##### `IconPack.ignoreCleanupFor?: string|string[]|RegExp|(symbol: Cheerio) => boolean`
+  Exclude some icons from cleanup process. During build process from each icon will be removed `fill`, `stroke` and `opacity` attributes. This is necessary in order to gain control over these properties from CSS. Ignored icons will be included in sprite as is.
+
+  ##### `IconPack.ratioPrecision?: number`
+  Default `2`. Precision for icon size ratio.
