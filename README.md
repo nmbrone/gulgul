@@ -52,43 +52,86 @@ SRC.scripts('**/*.js', '!/subfolder/**/*'); // => ['src/js/**/.*js', '!src/js/su
 
 ## Configuration
 
-Before we start, you should know that some of the tasks can run child tasks. This was done in order to have the ability to build multiple icon packs or multiple CSS bundles for example.
-Configuration for child tasks usually looks like collection of objects: 
+Before we start, you should know that some of the tasks can run child tasks. This was done in order to have the ability to build multiple icon packs or multiple CSS bundles for example. 
 
-`[name: string]: { src: string|string[], watch: boolean|string|string[] }`
+To create such a task simply define the task as an array of `options`. In that case, each `options` must contain one of `id` > `name` > `bundleName` field in order to properly set name for child task.
 
-or arrays:
+For example, if you need to build multiple CSS bundles, then you have to define task `styles` as:
+```js
+{
+  styles: [ {bundleName: 'first', /*...*/},  { bundleName: 'second', /*...*/}]
+}
+```
+Now for build one of the bundles separately you able to run separate task: `styles:first` or `styles:second`. And task `styles` will run them both.
 
-`[ name: string, src: string|string[], watch: boolean|string|string[] ]`
-
-These configurations marked further as type `ChildTask`.
+Each task also may contain next fields:
+- `src: string|string[]`
+  Input path. Usually will be passed to `gulp.src()`;
+- `dest: string`
+  Output path. Usually will be passed to `gulp.dest()`;
+- `watch: boolean|string|string[]`
+  You can simply set this to `true`, and in this case, `src` will be used as a path to watch for file changes, or you can set custom path to watch (it will be provided to the `gulp.watch()`).
+- `deps: string[]`
+  An array of tasks to be executed and completed before your task will run. Will be passed as the second parameter to `gulp.task()`.
 
 ### Tasks:
 
-- ### `icons`
+- ### `icons: Object|Object[]`
+
+  ##### `bundleName?: string`
+  Default `icons`. Name of icon bundle. Also used as the filename for generated images, styles and preview files.
+
+  ##### `src: string|string[]`
+  Path to *.svg files. Will be passed to the `gulp.src()`.
+
+  ##### `dest: string`
+  Path to where to store generated sprite. Will be passed to the `gulp.dest()`.
+
+  ##### `stylesDest: string`
+  Path to where to store generated styles. Will be passed to the `gulp.dest()`.
+
+  ##### `previewDest?: string`
+  Path to where to store generated html preview. Will be passed to the `gulp.dest()`.
+
+  ##### `watch?: boolean|string|string[]`
+  Default `false`. You can simply set this to `true`, and in this case, `src` will be used as a path to watch for file changes, or you can set custom path to watch (it will be provided to the `gulp.watch()`).
+
+  ##### `className: string`
+  Default `icon`. Base css class name. Also used as a prefix for each icon in the bundle.
+
+  ##### `secondaryColor?: string`
+  Default `''`. CSS color. Can be any color. During build process this color will be raplaced by 'currentColor'. This little trick gives us ability to use dual color icons. Later in css main color of icon can be set with 'fill' property, and secondary color with 'color' property.
+
+  ##### `ignoreCleanupFor?: string|string[]|RegExp|(symbol: Cheerio) => boolean`
+  Exclude some icons from cleanup process. During build process from each icon will be removed `fill`, `stroke` and `opacity` attributes. This is necessary in order to gain control over these properties from CSS. Ignored icons will be included in sprite as is.
+
+  ##### `ratioPrecision?: number`
+  Default `2`. Precision for icon size ratio.
+
   ##### `stylesTemplate: string`
   Path to styles template (relative to task js file).
 
   ##### `previewTemplate: string`
   Path to preview page template (relative to task js file).
 
-  ##### `packs: [IconPack: ChildTask][]`
-  A collection of icons packs options.
+  ##### `IconPack.preview?: boolean`
+  Default `true`. Toggle preview for icon bundle.
 
-  ##### `IconPack.name: string`
-  Name of icon pack. Also used as a name for child task. For example, if `name = 'brand'` then for this icon pack will be available separate gulp task `icons:brand`.
+- ### `styles: Object|Object[]`
 
-  ##### `IconPack.src: string|string[]`
-  Path to *.svg files. Will be passed to the `gulp.src()`.
+  ##### `bundleName: string`
+  Default `name`.
 
-  ##### `IconPack.className: string`
-  Base css class name. Also used as a prefix for each icon in the pack.
+  ##### `src: string|string[]`
 
-  ##### `IconPack.secondaryColor?: string`
-  CSS color. Can be any color. During build process this color will be raplaced by 'currentColor'. This little trick gives us ability to use dual color icons. Later in css main color of icon can be set with 'fill' property, and secondary color with 'color' property.
+  ##### `dest: string`
 
-  ##### `IconPack.ignoreCleanupFor?: string|string[]|RegExp|(symbol: Cheerio) => boolean`
-  Exclude some icons from cleanup process. During build process from each icon will be removed `fill`, `stroke` and `opacity` attributes. This is necessary in order to gain control over these properties from CSS. Ignored icons will be included in sprite as is.
+  ##### `sourceMap?: boolean`
+  Default `true`.
 
-  ##### `IconPack.ratioPrecision?: number`
-  Default `2`. Precision for icon size ratio.
+  ##### `sassOptions?: Object`
+  Default
+  `{ precision: 5, outputStyle: process.env.NODE_ENV === 'production' ? 'compressed' : 'expanded', includePaths: ['node_modules'] }`
+
+  ##### `autoprefixerOptions?: Object`
+  Default `{ browsers: ['> 1%'], cascade: false }`.

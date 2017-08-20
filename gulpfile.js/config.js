@@ -1,5 +1,3 @@
-const path = require('path');
-
 // prettier-ignore
 const paths = {
   src: {
@@ -25,23 +23,59 @@ const paths = {
 
 const tasks = {
   icons: {
-    stylesTemplate: 'template.sass',
-    previewTemplate: 'preview.html',
-    packs: [
-      {
-        name: 'icons',
-        src: path.join(paths.src.icons, '**/*.svg'),
-        className: 'icon',
-        secondaryColor: '#9B9B9B',
-        ignoreCleanupFor: /cup/,
-      },
-      {
-        name: 'icons-brand',
-        src: path.join(paths.src.icons, 'second/*.svg'),
-        className: 'icon-brand',
-        ratioPrecision: 5,
-      },
-    ],
+    bundleName: 'icons',
+    src: paths.src.icons + '/**/*.svg',
+    dest: paths.dest.images,
+    watch: true,
+    className: 'icon',
+    secondaryColor: '#9B9B9B',
+    ignoreCleanupFor: /cup/,
+    stylesDest: paths.src.stylesGen,
+    previewDest: paths.dest.previews,
+    preview: process.env.NODE_ENV !== 'production',
+  },
+
+  styles: {
+    bundleName: 'main',
+    src: paths.src.styles + '/main.sass',
+    dest: paths.dest.styles,
+    watch: paths.src.styles + '/**/*.{sass,scss}',
+    sourceMap: true,
+  },
+
+  copy: [
+    {
+      name: 'fonts',
+      src: paths.src.fonts + '/**/*.{woff,woff2,eot,ttf}',
+      dest: paths.dest.fonts,
+    },
+    {
+      name: 'images',
+      src: paths.src.images + '/**/*.{jpg,jpeg,png,gif,svg}',
+      dest: paths.dest.images,
+    },
+  ],
+
+  server: {
+    server: [paths.dest.root, paths.src.root],
+    files: [paths.dest.root],
+    port: 3003,
+  },
+
+  clean: {
+    src: [paths.dest.root, paths.src.stylesGen],
+  },
+
+  build: {
+    deps: ['clean', 'icons', 'styles', 'copy'],
+  },
+
+  default: {
+    deps: ['build', 'watch', 'server'],
+  },
+
+  watch: {
+    deps: ['icons:watch', 'styles:watch'],
   },
 };
 

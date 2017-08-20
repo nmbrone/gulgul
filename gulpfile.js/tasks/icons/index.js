@@ -5,18 +5,33 @@ const rename = require('gulp-rename');
 const cheerio = require('gulp-cheerio');
 const consolidate = require('gulp-consolidate');
 const round = require('lodash/round');
+const merge = require('lodash/merge');
 const path = require('path');
 const errorHandler = require('../../utils/error-handler');
-const createTasks = require('../../utils/create-tasks');
-const { paths, tasks } = require('../../config');
 
 const defaults = {
-  name: '',
+  bundleName: 'icons',
   src: '',
-  className: '',
+  dest: '',
+  watch: false,
+  className: 'icon',
   secondaryColor: '',
   ignoreCleanupFor: null,
   ratioPrecision: 2,
+  stylesTemplate: 'template.sass',
+  previewTemplate: 'preview.html',
+  stylesDest: '',
+  previewDest: '',
+  preview: true,
+  svgMinOptions: {
+    js2svg: { pretty: true },
+    plugins: [
+      { removeDesc: true },
+      { cleanupIDs: true },
+      { mergePaths: false },
+    ],
+  },
+  svgStoreOptions: { inlineSvg: false },
 };
 
 /**
@@ -96,31 +111,35 @@ const processIconPack = ($, options, done) => {
 
   const templateData = Object.assign({}, options, {
     icons: symbolsData,
-    spritePath: path.relative(paths.dest.previews, paths.dest.images),
-    spriteName: options.name,
+    spritePath: path.relative(options.previewDest, options.dest),
+    spriteName: options.bundleName,
   });
 
-  gulp
-    .src(path.resolve(__dirname, tasks.icons.stylesTemplate))
-    .pipe(errorHandler())
-    .pipe(consolidate('lodash', templateData))
-    .pipe(rename({ basename: options.name }))
-    .pipe(gulp.dest(paths.src.stylesGen))
-    .on('end', done);
+  if (options.stylesDest) {
+    gulp
+      .src(path.resolve(__dirname, options.stylesTemplate))
+      .pipe(errorHandler())
+      .pipe(consolidate('lodash', templateData))
+      .pipe(rename({ basename: options.bundleName }))
+      .pipe(gulp.dest(options.stylesDest))
+      .on('end', done);
+  } else {
+    done();
+  }
 
-  if (process.env.NODE_ENV === 'production') return;
-
-  gulp
-    .src(path.resolve(__dirname, tasks.icons.previewTemplate))
-    .pipe(errorHandler())
-    .pipe(consolidate('lodash', templateData))
-    .pipe(rename({ basename: options.name }))
-    .pipe(gulp.dest(paths.dest.previews));
+  if (options.preview && options.previewDest) {
+    gulp
+      .src(path.resolve(__dirname, options.previewTemplate))
+      .pipe(errorHandler())
+      .pipe(consolidate('lodash', templateData))
+      .pipe(rename({ basename: options.bundleName }))
+      .pipe(gulp.dest(options.previewDest));
+  }
 };
 
 /**
  * @param {Object} options
- * @param {string} options.name - Name of icon pack.
+ * @param {string} options.bundleName - Name of icon pack.
  * @param {string} options.src - Path to SVG icons.
  * @param {string} options.className - CSS class name.
  * @param {string} options.secondaryColor - By default, we remove all 'fill'
@@ -129,30 +148,21 @@ const processIconPack = ($, options, done) => {
  *    This trick gives us the ability to have 'dual color' icons.
  */
 const createIconPack = options => {
-  options = Object.assign({}, defaults, options);
+  options = merge({}, defaults, options);
   return gulp
     .src(options.src)
     .pipe(errorHandler())
-    .pipe(
-      svgmin({
-        js2svg: { pretty: true },
-        plugins: [
-          { removeDesc: true },
-          { cleanupIDs: true },
-          { mergePaths: false },
-        ],
-      })
-    )
+    .pipe(svgmin(options.svgMinOptions))
     .pipe(rename({ prefix: `${options.className}-` }))
-    .pipe(svgStore({ inlineSvg: false }))
+    .pipe(svgStore(options.svgStoreOptions))
     .pipe(
       cheerio({
         run: ($, file, done) => processIconPack($, options, done),
         parserOptions: { xmlMode: true },
       })
     )
-    .pipe(rename({ basename: options.name }))
-    .pipe(gulp.dest(paths.dest.images));
+    .pipe(rename({ basename: options.bundleName }))
+    .pipe(gulp.dest(options.dest));
 };
 
-createTasks('icons', tasks.icons.packs, createIconPack);
+module.exports = createIconPack;
