@@ -6,6 +6,7 @@ const paths = {
     styles    : 'src/css',
     stylesGen : 'src/css/gen',
     templates : 'src/templates',
+    locales   : 'src/templates/locales',
     images    : 'src/img',
     fonts     : 'src/fonts',
     icons     : 'src/icons',
@@ -56,10 +57,31 @@ const tasks = {
     },
   ],
 
+  templates: [
+    {
+      name: 'changed',
+      src: paths.src.templates + '/**/[^_]*.{njk}',
+      dest: paths.dest.root,
+      watch: true,
+      onlyChanged: true,
+      manageEnvModule: paths.src.templates + '/manage-env.js',
+      pathToLocales: paths.src.locales,
+    },
+    {
+      name: 'all',
+      src: paths.src.templates + '/**/[^_]*.{njk,}',
+      dest: paths.dest.root,
+      watch: paths.src.templates + '/**/_*.{njk}',
+      onlyChanged: false,
+      manageEnvModule: paths.src.templates + '/manage-env.js',
+      pathToLocales: paths.src.locales,
+    },
+  ],
+
   server: {
     server: [paths.dest.root, paths.src.root],
     files: [paths.dest.root],
-    port: 3003,
+    port: 3000,
   },
 
   clean: {
@@ -67,7 +89,7 @@ const tasks = {
   },
 
   build: {
-    deps: ['clean', 'icons', 'styles', 'copy'],
+    deps: ['clean', 'icons', 'styles', 'copy', 'templates:all'],
   },
 
   default: {
@@ -75,7 +97,7 @@ const tasks = {
   },
 
   watch: {
-    deps: ['icons:watch', 'styles:watch'],
+    deps: ['icons:watch', 'styles:watch', 'templates:watch'],
   },
 };
 
