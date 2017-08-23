@@ -71,7 +71,13 @@ const tasks = {
     },
   ],
 
-  webpack: [{ name: 'run' }, { name: 'watch', webpackWatch: true }],
+  webpack: [
+    { name: 'run' },
+    {
+      name: 'watch',
+      webpackWatch: true,
+    },
+  ],
 
   server: {
     server: [paths.dest.root, paths.src.root],

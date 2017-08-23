@@ -109,11 +109,18 @@ function merge() {
 }
 
 module.exports = function runWebpack(options, cb) {
-  const config = merge(
-    {},
-    baseConfig,
-    process.env.NODE_ENV === 'production' ? productionConfig : developmentConfig
-  );
+  let config;
+  if (options.webpackConfigFile) {
+    config = require(path.resolve(options.webpackConfigFile));
+  } else {
+    config = merge(
+      {},
+      baseConfig,
+      process.env.NODE_ENV === 'production'
+        ? productionConfig
+        : developmentConfig
+    );
+  }
   if (options.webpackWatch) {
     webpack(config).watch({ ignored: /node_modules/ }, compilationHandler);
     cb();

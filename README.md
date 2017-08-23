@@ -131,9 +131,13 @@ Each task also may contain such fields:
 
   ##### `webpackWatch?: boolean`
   
-  The only one available option here. When `true` webpack will start in watch mode.
-  
-  All other configurations for [webpack](https://webpack.js.org/configuration/#options) are defined inside `tasks/webpack.js` file.
+  When `true` webpack will start in watch mode.
+
+  ##### `webpackConfigFile?: string`
+
+  Path to webpack configuration file. Specify your own [configuration](https://webpack.js.org/configuration/#options) file.
+  Default configuration are defined inside `tasks/webpack.js` file.
+
 
   The simplest way to register `webpack` task is adding a field `webpack: {}` in tasks config. And with additional `watch` task: `webpack: { watch: 'path/to/scripts' }`. In this case, gulp watcher will run webpack whenever files changes.
   
