@@ -52,7 +52,9 @@ SRC.scripts('**/*.js', '!/subfolder/**/*'); // => ['src/js/**/.*js', '!src/js/su
 
 ## Configuration
 
-Before we start, you should know that some of the tasks can run child tasks. This was done in order to have the ability to build multiple icon packs or multiple CSS bundles for example. 
+The configuration file must exports `tasks` object. `tasks` is the place where all gulp tasks will be registered and optionally configured. In most cases, gulp task should run some usefull function. Such function can be exported from separate module under `tasks` directory. Module name must be the same as task name.
+
+Each of tasks may run child tasks. This was implement in order to have the ability to build multiple icon packs or multiple CSS bundles for example. 
 
 To create such a task simply define the task as an array of `options`. In that case, each `options` must contain one of `id` > `name` > `bundleName` field in order to properly set name for child task.
 
@@ -64,7 +66,7 @@ For example, if you need to build multiple CSS bundles, then you have to define 
 ```
 Now for build one of the bundles separately you able to run separate task: `styles:first` or `styles:second`. And task `styles` will run them both.
 
-Each task also may contain next fields:
+Each task also may contain such fields:
 - `src: string|string[]`
   Input path. Usually will be passed to `gulp.src()`;
 - `dest: string`
@@ -72,9 +74,75 @@ Each task also may contain next fields:
 - `watch: boolean|string|string[]`
   You can simply set this to `true`, and in this case, `src` will be used as a path to watch for file changes, or you can set custom path to watch (it will be provided to the `gulp.watch()`).
 - `deps: string[]`
-  An array of tasks to be executed and completed before your task will run. Will be passed as the second parameter to `gulp.task()`.
+  An array of tasks to be executed and completed before your task will run. Will be passed to [`run-sequence`](https://www.npmjs.com/package/run-sequence).
 
-### Tasks:
+### Built in tasks:
+
+- ### `templates`
+
+  ##### `onlyChanged?: boolean`
+  Default `false`. 
+  
+  Render only changed templates.
+
+  ##### `pathToEnvModule?: string`
+  Default `null`. 
+  
+  Path to `manageEnv` module. More [here](https://www.npmjs.com/package/gulp-nunjucks-render#environment).
+
+  ##### `pathToLocales?: string`
+  Default `null`.
+
+  Path to directory with locales for templates. All `.yml`, `.yaml` or `.json` files from here will be read, parsed, merged and passed into template via `nunjucksOptions.data`.
+
+  ##### `nunjucksOptions?: Object`
+  Default `{path: [/* src paths */], data: {/* localeData */}, envOptions: {watch: false, trimBlocks: true, lstripBlocks: true, autoescape: false}}`.
+
+  Options for [gulp-nunjucks-render](https://www.npmjs.com/package/gulp-nunjucks-render#options).
+
+  ##### `prettifyOptions?: Object`
+  Default `{indent_size: 2, wrap_attributes: 'auto', preserve_newlines: true, end_with_newline: true,}`.
+
+  Options for [gulp-prettify](https://www.npmjs.com/package/js-beautify#css--html) (HTML sections)
+
+  ##### `changedOptions?: Object`
+  Default `{ extension: '.html' }`.
+
+  Options for [gulp-changed](https://www.npmjs.com/package/gulp-changed#options).
+
+
+- ### `styles`
+
+  ##### `bundleName: string`
+  Default `name`.
+
+  ##### `sourceMap?: boolean`
+  Default `true`.
+
+  ##### `sassOptions?: Object`
+  Default
+  `{ precision: 5, outputStyle: process.env.NODE_ENV === 'production' ? 'compressed' : 'expanded', includePaths: ['node_modules'] }`
+
+  ##### `autoprefixerOptions?: Object`
+  Default `{ browsers: ['> 1%'], cascade: false }`.
+
+
+- ### `webpack`
+
+  ##### `webpackWatch?: boolean`
+  
+  The only one available option here. When `true` webpack will start in watch mode.
+  
+  All other configurations for [webpack](https://webpack.js.org/configuration/#options) are defined inside `tasks/webpack.js` file.
+
+  The simplest way to register `webpack` task is adding a field `webpack: {}` in tasks config. And with additional `watch` task: `webpack: { watch: 'path/to/scripts' }`. In this case, gulp watcher will run webpack whenever files changes.
+  
+  But the more efficient way is to let webpack watch for file changes by himself. To do that, split `webpack` task into two child tasks:
+  ```js
+  webpack: [{ name: 'run' }, { name: 'watch', webpackWatch: true }]
+  ```
+  Now you have `webpack:run` for the regular build and `webpack:watch` for watch mode:
+
 
 - ### `icons`
 
@@ -129,52 +197,6 @@ Each task also may contain next fields:
   
   Toggle preview for icon bundle.
 
-- ### `styles`
-
-  ##### `bundleName: string`
-  Default `name`.
-
-  ##### `sourceMap?: boolean`
-  Default `true`.
-
-  ##### `sassOptions?: Object`
-  Default
-  `{ precision: 5, outputStyle: process.env.NODE_ENV === 'production' ? 'compressed' : 'expanded', includePaths: ['node_modules'] }`
-
-  ##### `autoprefixerOptions?: Object`
-  Default `{ browsers: ['> 1%'], cascade: false }`.
-
-- ### `templates`
-
-  ##### `onlyChanged?: boolean`
-  Default `false`. 
-  
-  Render only changed templates.
-
-  ##### `manageEnvModule?: string`
-  Default `null`. 
-  
-  Path to `manageEnv` module. More [here](https://www.npmjs.com/package/gulp-nunjucks-render#environment).
-
-  ##### `pathToLocales?: string`
-  Default `null`.
-
-  Path to directory with locales for templates. All `.yml`, `.yaml` or `.json` files from here will be read, parsed, merged and passed into template via `nunjucksOptions.data`.
-
-  ##### `nunjucksOptions?: Object`
-  Default `{path: [/* src paths */], data: {/* localeData */}, envOptions: {watch: false, trimBlocks: true, lstripBlocks: true, autoescape: false}}`.
-
-  Options for [gulp-nunjucks-render](https://www.npmjs.com/package/gulp-nunjucks-render#options).
-
-  ##### `prettifyOptions?: Object`
-  Default `{indent_size: 2, wrap_attributes: 'auto', preserve_newlines: true, end_with_newline: true,}`.
-
-  Options for [gulp-prettify](https://www.npmjs.com/package/js-beautify#css--html) (HTML sections)
-
-  ##### `changedOptions?: Object`
-  Default `{ extension: '.html' }`.
-
-  Options for [gulp-changed](https://www.npmjs.com/package/gulp-changed#options).
 
 - ### `server`
 

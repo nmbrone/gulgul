@@ -7,8 +7,9 @@ const paths = {
     stylesGen : 'src/css/gen',
     templates : 'src/templates',
     locales   : 'src/templates/locales',
-    images    : 'src/img',
-    fonts     : 'src/fonts',
+    static    : 'src/static',
+    images    : 'src/static/img',
+    fonts     : 'src/static/fonts',
     icons     : 'src/icons',
   },
   dest: {
@@ -44,39 +45,33 @@ const tasks = {
     sourceMap: true,
   },
 
-  copy: [
-    {
-      name: 'fonts',
-      src: paths.src.fonts + '/**/*.{woff,woff2,eot,ttf}',
-      dest: paths.dest.fonts,
-    },
-    {
-      name: 'images',
-      src: paths.src.images + '/**/*.{jpg,jpeg,png,gif,svg}',
-      dest: paths.dest.images,
-    },
-  ],
+  copy: {
+    src: paths.src.static + '/*',
+    dest: paths.dest.root,
+  },
 
   templates: [
     {
-      name: 'changed',
-      src: paths.src.templates + '/**/[^_]*.{njk}',
+      name: 'all',
+      src: paths.src.templates + '/**/[^_]*.njk',
       dest: paths.dest.root,
-      watch: true,
-      onlyChanged: true,
-      manageEnvModule: paths.src.templates + '/manage-env.js',
+      watch: [paths.src.templates + '/**/_*.njk', paths.src.locales + '**/*.*'],
+      onlyChanged: false,
+      pathToEnvModule: paths.src.templates + '/manage-env.js',
       pathToLocales: paths.src.locales,
     },
     {
-      name: 'all',
-      src: paths.src.templates + '/**/[^_]*.{njk,}',
+      name: 'changed',
+      src: paths.src.templates + '/**/[^_]*.njk',
       dest: paths.dest.root,
-      watch: paths.src.templates + '/**/_*.{njk}',
-      onlyChanged: false,
-      manageEnvModule: paths.src.templates + '/manage-env.js',
+      watch: true,
+      onlyChanged: true,
+      pathToEnvModule: paths.src.templates + '/manage-env.js',
       pathToLocales: paths.src.locales,
     },
   ],
+
+  webpack: [{ name: 'run' }, { name: 'watch', webpackWatch: true }],
 
   server: {
     server: [paths.dest.root, paths.src.root],
@@ -89,7 +84,7 @@ const tasks = {
   },
 
   build: {
-    deps: ['clean', 'icons', 'styles', 'copy', 'templates:all'],
+    deps: ['clean', 'icons', 'styles', 'copy', 'templates:all', 'webpack:run'],
   },
 
   default: {
@@ -97,7 +92,7 @@ const tasks = {
   },
 
   watch: {
-    deps: ['icons:watch', 'styles:watch', 'templates:watch'],
+    deps: ['icons:watch', 'styles:watch', 'templates:watch', 'webpack:watch'],
   },
 };
 

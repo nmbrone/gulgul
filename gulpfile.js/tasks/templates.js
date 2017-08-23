@@ -31,7 +31,7 @@ function readLocales(dir) {
 module.exports = function renderHtml(options) {
   const defaults = {
     onlyChanged: false,
-    manageEnvModule: null,
+    pathToEnvModule: null,
     pathToLocales: null,
     nunjucksOptions: {
       path: []
@@ -56,9 +56,9 @@ module.exports = function renderHtml(options) {
 
   options = merge({}, defaults, options);
 
-  if (!options.nunjucksOptions.manageEnv && options.manageEnvModule) {
+  if (!options.nunjucksOptions.manageEnv && options.pathToEnvModule) {
     options.nunjucksOptions.manageEnv = require(path.resolve(
-      options.manageEnvModule
+      options.pathToEnvModule
     ));
   }
 

@@ -1,16 +1,12 @@
 ---
 extends:
 - eslint:recommended
-# - plugin:react/recommended
-# plugins:
-# - react
 env:
   browser: true
   es6: true
   node: true
   jest: true
 globals:
-  process: true
   fetch: true
 parserOptions:
   ecmaVersion: 2017
@@ -52,6 +48,3 @@ rules:
   - never
   constructor-super: 2
   arrow-spacing: 2
-  # react/prop-types:
-  # - 1
-  # - skipUndeclared: true
