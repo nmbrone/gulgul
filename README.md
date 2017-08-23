@@ -1,5 +1,14 @@
 # GulGul (WIP)
 
+## Content
+* [Configuration](#configuration)
+* [Built in tasks](#built-in-tasks)
+  * [templates](#templates)
+  * [styles](#styles)
+  * [webpack](#webpack)
+  * [icons](#icons)
+  * [server](#server)
+
 ## Configuration
 
 The configuration file must exports `tasks` object. `tasks` is the place where all gulp tasks will be registered and optionally configured. In most cases, gulp task should run some usefull function. Such function can be exported from separate module under `tasks` directory. Module name must be the same as task name.
@@ -28,7 +37,7 @@ Each task also may contain such fields:
 
 ### Built in tasks:
 
-- ### `templates`
+- #### `templates`
 
   ##### `onlyChanged?: boolean`
   Default `false`. 
@@ -61,7 +70,7 @@ Each task also may contain such fields:
   Options for [gulp-changed](https://www.npmjs.com/package/gulp-changed#options).
 
 
-- ### `styles`
+- #### `styles`
 
   ##### `bundleName: string`
   Default `name`.
@@ -77,7 +86,7 @@ Each task also may contain such fields:
   Default `{ browsers: ['> 1%'], cascade: false }`.
 
 
-- ### `webpack`
+- #### `webpack`
 
   ##### `webpackWatch?: boolean`
   
@@ -98,7 +107,7 @@ Each task also may contain such fields:
   Now you have `webpack:run` for the regular build and `webpack:watch` for watch mode:
 
 
-- ### `icons`
+- #### `icons`
 
   ##### `bundleName?: string`
   Default `icons`. 
@@ -152,7 +161,7 @@ Each task also may contain such fields:
   Toggle preview for icon bundle.
 
 
-- ### `server`
+- #### `server`
 
   Default `{port: 3000, notify: false, ghostMode: false, open: false}`.
 
