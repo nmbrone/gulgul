@@ -8,6 +8,7 @@
   * [webpack](#webpack)
   * [icons](#icons)
   * [server](#server)
+  * [revision](#revision)
 
 ## Configuration
 
@@ -149,10 +150,10 @@ Each task also may contain such fields:
   Precision for icon size ratio.
 
   ##### `stylesTemplate: string`
-  Path to styles template (relative to task js file).
+  Default `template.sass`. Path to styles template (relative to task js file).
 
   ##### `previewTemplate: string`
-  Path to preview page template (relative to task js file).
+  Default `preview.html`. Path to preview page template (relative to task js file).
 
   ##### `preview?: boolean`
   Default `true`. 
