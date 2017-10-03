@@ -5,6 +5,10 @@ const gutil = require('gulp-util');
 const notify = require('gulp-notify');
 const { paths } = require('../config');
 
+module.exports = runWebpack;
+
+const { NODE_ENV } = process.env;
+
 const baseConfig = {
   context: path.resolve(paths.src.scripts),
 
@@ -30,15 +34,20 @@ const baseConfig = {
     ],
   },
 
-  // plugins: [
-  //   new webpack.optimize.CommonsChunkPlugin({
-  //     name: 'vendor',
-  //     chunks: ['main'],
-  //     minChunks(module) {
-  //       return module.context && module.context.includes('node_modules');
-  //     },
-  //   }),
-  // ],
+  plugins: [
+    // new webpack.optimize.CommonsChunkPlugin({
+    //   name: 'vendor',
+    //   chunks: ['main'],
+    //   minChunks(module) {
+    //     return module.context && module.context.includes('node_modules');
+    //   },
+    // }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify(NODE_ENV),
+      },
+    }),
+  ],
 
   stats: {
     colors: true,
@@ -48,16 +57,7 @@ const baseConfig = {
 };
 
 const developmentConfig = {
-  devtool: '#source-map',
-
-  plugins: [
-    new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify('development'),
-      },
-    }),
-  ],
+  devtool: 'source-map',
 
   performance: {
     hints: false,
@@ -68,11 +68,6 @@ const developmentConfig = {
 
 const productionConfig = {
   plugins: [
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify('production'),
-      },
-    }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false,
@@ -80,6 +75,29 @@ const productionConfig = {
     }),
   ],
 };
+
+function runWebpack(options, cb) {
+  let config;
+  if (options.webpackConfigFile) {
+    config = require(path.resolve(options.webpackConfigFile));
+    if (typeof config === 'function') config = config();
+  } else {
+    config = customMerge(
+      {},
+      baseConfig,
+      NODE_ENV === 'production' ? productionConfig : developmentConfig
+    );
+  }
+  if (options.webpackWatch) {
+    webpack(config).watch({ ignored: /node_modules/ }, compilationHandler);
+    cb();
+  } else {
+    webpack(config, (...args) => {
+      compilationHandler(...args);
+      cb();
+    });
+  }
+}
 
 function compilationHandler(err, stats) {
   const notifier = notify.onError({
@@ -102,32 +120,8 @@ function compilationHandler(err, stats) {
   gutil.log('[webpack]', stats.toString({ colors: true, modules: false }));
 }
 
-function merge() {
-  return mergeWith(...arguments, (current, next) => {
+function customMerge(...args) {
+  return mergeWith(...args, (current, next) => {
     if (Array.isArray(current)) return current.concat(next);
   });
 }
-
-module.exports = function runWebpack(options, cb) {
-  let config;
-  if (options.webpackConfigFile) {
-    config = require(path.resolve(options.webpackConfigFile));
-  } else {
-    config = merge(
-      {},
-      baseConfig,
-      process.env.NODE_ENV === 'production'
-        ? productionConfig
-        : developmentConfig
-    );
-  }
-  if (options.webpackWatch) {
-    webpack(config).watch({ ignored: /node_modules/ }, compilationHandler);
-    cb();
-  } else {
-    webpack(config, (...args) => {
-      compilationHandler(...args);
-      cb();
-    });
-  }
-};
