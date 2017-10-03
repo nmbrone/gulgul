@@ -14,11 +14,12 @@ const paths = {
   },
   dest: {
     root      : 'build',
-    fonts     : 'build/fonts',
-    images    : 'build/img',
-    styles    : 'build/css',
-    scripts   : 'build/js',
-    previews  : 'build/previews',
+    assets    : 'build/assets',
+    fonts     : 'build/assets/fonts',
+    images    : 'build/assets/img',
+    styles    : 'build/assets/css',
+    scripts   : 'build/assets/js',
+    previews  : 'build/assets/previews',
     html      : 'build',
   },
 };
@@ -85,16 +86,26 @@ const tasks = {
     port: 3000,
   },
 
+  revision: {
+    src: [paths.dest.root + '/**/*.*', '!' + paths.dest.root + '/**/*.html'],
+    dest: paths.dest.root,
+    manifestFileName: 'asset-manifest.json',
+  },
+
   clean: {
     src: [paths.dest.root, paths.src.stylesGen],
   },
 
-  build: {
+  'build:dev': {
     deps: ['clean', 'icons', 'styles', 'copy', 'templates:all', 'webpack:run'],
   },
 
+  build: {
+    deps: ['build:dev', 'revision'],
+  },
+
   default: {
-    deps: ['build', 'watch', 'server'],
+    deps: ['build:dev', 'watch', 'server'],
   },
 
   watch: {
