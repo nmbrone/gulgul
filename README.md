@@ -165,3 +165,18 @@ Each task also may contain such fields:
   Default `{port: 3000, notify: false, ghostMode: false, open: false}`.
 
   Options for [browser-sync](https://browsersync.io/docs/options).
+
+
+- #### `revision`
+
+  ##### `manifestFilename?: string`
+  Default `asset-manifest.json`. 
+
+  ##### `revOptions?: {}`
+  Options for [gulp-rev](https://www.npmjs.com/package/gulp-rev#revmanifestpath-options).
+
+  ##### `revDeleteOptions?: {}`
+  Options for [gulp-rev-delete-original](https://www.npmjs.com/package/gulp-rev-delete-original#options).
+
+  ##### `revReplaceOptions?: {}`
+  Options for [gulp-rev-replace](https://www.npmjs.com/package/gulp-rev-replace#revreplaceoptions).
