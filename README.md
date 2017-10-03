@@ -19,9 +19,7 @@ To create such a task simply define the task as an array of `options`. In that c
 
 For example, if you need to build multiple CSS bundles, then you have to define task `styles` as:
 ```js
-{
-  styles: [ {bundleName: 'first', /*...*/},  { bundleName: 'second', /*...*/}]
-}
+styles: [ {bundleName: 'first', /*...*/},  { bundleName: 'second', /*...*/}]
 ```
 Now for build one of the bundles separately you able to run separate task: `styles:first` or `styles:second`. And task `styles` will run them both.
 
@@ -80,7 +78,8 @@ Each task also may contain such fields:
 
   ##### `sassOptions?: Object`
   Default
-  `{ precision: 5, outputStyle: process.env.NODE_ENV === 'production' ? 'compressed' : 'expanded', includePaths: ['node_modules'] }`
+  `{ precision: 5, outputStyle: process.env.NODE_ENV === 'production' ? 'compressed' : 'expanded', includePaths: ['node_modules'] }`.
+  Options for [gulp-sass/node-sass](https://github.com/sass/node-sass#options)
 
   ##### `autoprefixerOptions?: Object`
   Default `{ browsers: ['> 1%'], cascade: false }`.
@@ -104,7 +103,7 @@ Each task also may contain such fields:
   ```js
   webpack: [{ name: 'run' }, { name: 'watch', webpackWatch: true }]
   ```
-  Now you have `webpack:run` for the regular build and `webpack:watch` for watch mode:
+  Now you have `webpack:run` for the regular build and `webpack:watch` for watch mode.
 
 
 - #### `icons`
@@ -155,7 +154,7 @@ Each task also may contain such fields:
   ##### `previewTemplate: string`
   Path to preview page template (relative to task js file).
 
-  ##### `IconPack.preview?: boolean`
+  ##### `preview?: boolean`
   Default `true`. 
   
   Toggle preview for icon bundle.
