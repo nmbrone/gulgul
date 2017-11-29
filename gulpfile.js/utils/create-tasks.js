@@ -1,15 +1,12 @@
 const gulp = require('gulp');
 const runSequence = require('run-sequence');
 
-module.exports = createTasks;
-
 /**
- * @param {string} baseName - Used as name for parent task,
- * and as prefix for child tasks.
- * @param {(Array|Object)} collection
- * @param {Function} [fn=noop] - Will be invoked for each item in a collection.
+ * @param {string} baseName - Used as name for parent task, and as prefix for child tasks.
+ * @param {(Array|Object)} options - Task options.
+ * @param {Function} [fn=emptyTaskFn] - Will be invoked for each item in a collection.
  */
-function createTasks(baseName, options, fn = noop) {
+module.exports = function createTask(baseName, options, fn = emptyTaskFn) {
   options = [].concat(options);
   const tasks = [];
   const watchTasks = [];
@@ -22,12 +19,7 @@ function createTasks(baseName, options, fn = noop) {
       : baseName;
     tasks.push(task);
     if (opt.deps) {
-      gulp.task(task, cb =>
-        runSequence(...opt.deps, () => {
-          fn(opt, cb);
-          cb();
-        })
-      );
+      gulp.task(task, cb => runSequence(...opt.deps, () => fn(opt, cb)));
     } else {
       gulp.task(task, cb => fn(opt, cb));
     }
@@ -49,7 +41,7 @@ function createTasks(baseName, options, fn = noop) {
   if (watchTasks.length) {
     gulp.task(`${baseName}:watch`, watchTasks);
   }
-}
+};
 
 function validateOptions(options, multiple) {
   if (multiple && !(options.id || options.name || options.bundleName)) {
@@ -66,4 +58,6 @@ function validateOptions(options, multiple) {
   }
 }
 
-function noop() {}
+function emptyTaskFn(opt, cb) {
+  cb();
+}

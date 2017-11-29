@@ -8,6 +8,7 @@ const defaults = {
   open: false,
 };
 
-module.exports = function runServer(options) {
+module.exports = function runServer(options, cb) {
   server.init(merge({}, defaults, options));
+  cb();
 };
