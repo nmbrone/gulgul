@@ -19,16 +19,17 @@ module.exports = {
  * @param {*} args - Arguments for gulp.task().
  */
 function addTask(...args) {
-  if (typeof args[1] === 'function' && args.length >= 3) {
-    const [name, fn, options, ...rest] = args;
-
-    if (options.watch) {
-      const glob = typeof watch === 'boolean' ? options.src : options.watch;
-      gulp.task(`${name}:watch`, () => gulp.watch(glob, [name]));
-    }
-
-    return gulp.task(name, fn.bind(undefined, options, ...rest));
+  if (typeof args[1] !== 'function' || args.length < 3) {
+    return gulp.task(...args);
   }
 
-  return gulp.task(...args);
+  const [name, fn, options, ...rest] = args;
+  const {src, watch} = options;
+
+  if (watch) {
+    const glob = typeof watch === 'boolean' ? src : watch;
+    gulp.task(`${name}:watch`, () => gulp.watch(glob, [name]));
+  }
+
+  return gulp.task(name, fn.bind(undefined, options, ...rest));
 }

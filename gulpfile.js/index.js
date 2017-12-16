@@ -1,5 +1,6 @@
 const runSequence = require('run-sequence');
 const {addTask} = require('./lib/helpers');
+const paths = require('./paths');
 
 const clean = require('./tasks/clean');
 const copy = require('./tasks/copy');
@@ -7,50 +8,27 @@ const server = require('./tasks/server');
 const styles = require('./tasks/styles');
 const icons = require('./tasks/icons');
 const revision = require('./tasks/revision');
-
-// prettier-ignore
-const paths = {
-  src: {
-    root      : 'src',
-    scripts   : 'src/js',
-    styles    : 'src/css',
-    stylesGen : 'src/css/gen',
-    templates : 'src/templates',
-    locales   : 'src/templates/locales',
-    static    : 'src/static',
-    images    : 'src/static/img',
-    fonts     : 'src/static/fonts',
-    icons     : 'src/icons',
-  },
-  dest: {
-    root      : 'build',
-    assets    : 'build/assets',
-    fonts     : 'build/assets/fonts',
-    images    : 'build/assets/img',
-    styles    : 'build/assets/css',
-    scripts   : 'build/assets/js',
-    previews  : 'build/assets/previews',
-    html      : 'build',
-  },
-};
+const webpack = require('./tasks/webpack');
+const templates = require('./tasks/templates');
 
 addTask('clean', clean, {
   src: [paths.dest.root, paths.src.stylesGen],
 });
 
-addTask('copy:public', copy, {
-  src: 'public',
-  dest: 'build',
+addTask('copy', copy, {
+  src: paths.src.static + '/**/*',
+  dest: paths.dest.root,
 });
 
 addTask('revision', revision, {
-  src: [paths.dest.root + '/**/*.*', '!' + paths.dest.root + '/**/*.html'],
+  src: paths.dest.root + '/**/*',
   dest: paths.dest.root,
   manifestFileName: 'asset-manifest.json',
 });
 
 addTask('server', server, {
-  server: [paths.dest.root],
+  server: [paths.dest.root, paths.src.static],
+  files: [paths.dest.root + '/**/*.(html|css|js)'],
 });
 
 addTask('styles', styles, {
@@ -72,6 +50,42 @@ addTask('icons', icons, {
   preview: process.env.NODE_ENV !== 'production',
 });
 
+addTask('views:all', templates, {
+  src: paths.src.views + '/**/[^_]*.njk',
+  dest: paths.dest.views,
+  watch: paths.src.views + '/**/_*.njk',
+});
+
+addTask('views:only:changed', templates, {
+  src: paths.src.views + '/**/[^_]*.njk',
+  dest: paths.dest.views,
+  watch: true,
+  onlyChanged: true,
+});
+
+addTask('webpack', webpack, {});
+
+addTask('webpack:watch', webpack, {
+  webpackWatch: true,
+});
+
+addTask('watch', [
+  'icons:watch',
+  'styles:watch',
+  'views:all:watch',
+  'views:only:changed:watch',
+  'webpack:watch',
+]);
+
+addTask('build', cb => {
+  const tasks = ['clean', 'icons', 'styles', 'webpack', 'views:all'];
+  if (process.env.NODE_ENV === 'production') {
+    tasks.push('copy');
+    tasks.push('revision');
+  }
+  return runSequence(...tasks, cb);
+});
+
 addTask('default', cb => {
-  return runSequence('clean', 'icons', 'styles', cb);
+  return runSequence('clean', 'build', 'watch', 'server', cb);
 });

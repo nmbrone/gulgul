@@ -113,7 +113,7 @@ const processIconPack = ($, options, done) => {
       .src(path.resolve(__dirname, options.stylesTemplate))
       .pipe(errorHandler())
       .pipe(consolidate('lodash', templateData))
-      .pipe(rename({basename: options.bundleName}))
+      .pipe(rename({basename: options.bundleName, prefix: '_'}))
       .pipe(gulp.dest(options.stylesDest))
       .on('end', done);
   } else {

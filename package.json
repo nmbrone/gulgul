@@ -1,6 +1,6 @@
 {
   "name": "gulgul",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "description": "Gulp starter kit",
   "main": "index.js",
   "repository": "git@github.com:nmbrone/gulgul.git",

@@ -6,27 +6,27 @@ const changed = require('gulp-changed');
 const prettify = require('gulp-prettify');
 const merge = require('lodash/merge');
 const path = require('path');
-const fs = require('fs');
-const yaml = require('js-yaml');
+// const fs = require('fs');
+// const yaml = require('js-yaml');
 const errorHandler = require('../lib/error-handler');
 
-function readLocales(dir) {
-  return fs.readdirSync(dir).reduce((data, file) => {
-    const filePath = path.join(dir, file);
-    if (fs.lstatSync(filePath).isDirectory()) {
-      return merge(data, readLocales(filePath));
-    }
-    switch (path.extname(filePath)) {
-      case '.yml':
-      case '.yaml':
-        return merge(data, yaml.safeLoad(fs.readFileSync(filePath, 'utf-8')));
-      case '.json':
-        return merge(data, JSON.parse(fs.readFileSync(filePath, 'utf-8')));
-      default:
-        return data;
-    }
-  }, {});
-}
+// function readLocales(dir) {
+//   return fs.readdirSync(dir).reduce((data, file) => {
+//     const filePath = path.join(dir, file);
+//     if (fs.lstatSync(filePath).isDirectory()) {
+//       return merge(data, readLocales(filePath));
+//     }
+//     switch (path.extname(filePath)) {
+//       case '.yml':
+//       case '.yaml':
+//         return merge(data, yaml.safeLoad(fs.readFileSync(filePath, 'utf-8')));
+//       case '.json':
+//         return merge(data, JSON.parse(fs.readFileSync(filePath, 'utf-8')));
+//       default:
+//         return data;
+//     }
+//   }, {});
+// }
 
 module.exports = function renderHtml(options) {
   const defaults = {
@@ -62,7 +62,7 @@ module.exports = function renderHtml(options) {
     ));
   }
 
-  merge(options.nunjucksOptions.data, readLocales(options.pathToLocales));
+  // merge(options.nunjucksOptions.data, readLocales(options.pathToLocales));
 
   return gulp
     .src(options.src)

@@ -3,27 +3,23 @@ const webpack = require('webpack');
 const mergeWith = require('lodash/mergeWith');
 const gutil = require('gulp-util');
 const notify = require('gulp-notify');
-const { paths } = require('../config');
+const paths = require('../paths');
 
 module.exports = runWebpack;
 
-const { NODE_ENV } = process.env;
+const {NODE_ENV} = process.env;
 
 const baseConfig = {
   context: path.resolve(paths.src.scripts),
-
   entry: './main.js',
-
   output: {
     path: path.resolve(paths.dest.scripts),
     filename: '[name].js',
     publicPath: '/js/',
   },
-
   resolve: {
     extensions: ['.js', '.json'],
   },
-
   module: {
     rules: [
       {
@@ -33,7 +29,6 @@ const baseConfig = {
       },
     ],
   },
-
   plugins: [
     // new webpack.optimize.CommonsChunkPlugin({
     //   name: 'vendor',
@@ -42,13 +37,9 @@ const baseConfig = {
     //     return module.context && module.context.includes('node_modules');
     //   },
     // }),
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify(NODE_ENV),
-      },
-    }),
+    new webpack.EnvironmentPlugin({NODE_ENV: 'development'}),
   ],
-
+  devtool: 'source-map',
   stats: {
     colors: true,
     chunks: false,
@@ -57,8 +48,6 @@ const baseConfig = {
 };
 
 const developmentConfig = {
-  devtool: 'source-map',
-
   performance: {
     hints: false,
     maxEntrypointSize: 1000000, // 1mb
@@ -69,6 +58,7 @@ const developmentConfig = {
 const productionConfig = {
   plugins: [
     new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true,
       compress: {
         warnings: false,
       },
@@ -89,7 +79,7 @@ function runWebpack(options, cb) {
     );
   }
   if (options.webpackWatch) {
-    webpack(config).watch({ ignored: /node_modules/ }, compilationHandler);
+    webpack(config).watch({ignored: /node_modules/}, compilationHandler);
     cb();
   } else {
     webpack(config, (...args) => {
@@ -117,7 +107,7 @@ function compilationHandler(err, stats) {
   if (stats.hasErrors()) {
     notifier.call(undefined, new Error(info.errors.join()));
   }
-  gutil.log('[webpack]', stats.toString({ colors: true, modules: false }));
+  gutil.log('[webpack]', stats.toString({colors: true, modules: false}));
 }
 
 function customMerge(...args) {
