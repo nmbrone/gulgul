@@ -3,25 +3,22 @@ const gutil = require('gulp-util');
 const postcss = require('gulp-postcss');
 const sass = require('gulp-sass');
 const sourcemaps = require('gulp-sourcemaps');
-const rename = require('gulp-rename');
 const autoprefixer = require('autoprefixer');
 const mqpacker = require('css-mqpacker');
 const merge = require('lodash/merge');
-const errorHandler = require('../utils/error-handler');
+const errorHandler = require('../lib/error-handler');
 
 const defaults = {
-  bundleName: 'main',
-  src: '',
-  watch: '',
   sourceMap: true,
   sassOptions: {
+    includePaths: ['node_modules'],
     precision: 5,
     outputStyle:
       process.env.NODE_ENV === 'production' ? 'compressed' : 'expanded',
-    includePaths: ['node_modules'],
   },
   autoprefixerOptions: {
-    browsers: ['> 1%'],
+    browsers: ['> 1%', 'last 2 versions', 'Firefox ESR'],
+    flexbox: 'no-2009',
     cascade: false,
   },
 };
@@ -46,12 +43,12 @@ const sortMediaQueries = (a, b) => {
   return 1;
 };
 
-const compileStyles = options => {
+module.exports = function styles(options) {
   options = merge({}, defaults, options);
 
   const processors = [
     autoprefixer(options.autoprefixerOptions),
-    mqpacker({ sort: sortMediaQueries }),
+    mqpacker({sort: sortMediaQueries}),
   ];
 
   return gulp
@@ -60,9 +57,6 @@ const compileStyles = options => {
     .pipe(options.sourceMap ? sourcemaps.init() : gutil.noop())
     .pipe(sass(options.sassOptions))
     .pipe(postcss(processors))
-    .pipe(rename({ basename: options.bundleName }))
     .pipe(options.sourceMap ? sourcemaps.write('./') : gutil.noop())
     .pipe(gulp.dest(options.dest));
 };
-
-module.exports = compileStyles;

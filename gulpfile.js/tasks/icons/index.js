@@ -7,13 +7,10 @@ const consolidate = require('gulp-consolidate');
 const round = require('lodash/round');
 const merge = require('lodash/merge');
 const path = require('path');
-const errorHandler = require('../../utils/error-handler');
+const errorHandler = require('../../lib/error-handler');
 
 const defaults = {
   bundleName: 'icons',
-  src: '',
-  dest: '',
-  watch: false,
   className: 'icon',
   secondaryColor: '',
   ignoreCleanupFor: null,
@@ -24,14 +21,10 @@ const defaults = {
   previewDest: '',
   preview: true,
   svgMinOptions: {
-    js2svg: { pretty: true },
-    plugins: [
-      { removeDesc: true },
-      { cleanupIDs: true },
-      { mergePaths: false },
-    ],
+    js2svg: {pretty: true},
+    plugins: [{removeDesc: true}, {cleanupIDs: true}, {mergePaths: false}],
   },
-  svgStoreOptions: { inlineSvg: false },
+  svgStoreOptions: {inlineSvg: false},
 };
 
 /**
@@ -57,7 +50,7 @@ const getSymbolData = ($, symbol, options) => {
  * @param {{}} options
  */
 const cleanSymbolAttributes = ($, symbol, options) => {
-  const { secondaryColor, ignoreCleanupFor } = options;
+  const {secondaryColor, ignoreCleanupFor} = options;
   const name = symbol.attr('id').replace(options.className + '-', '');
 
   if (ignoreCleanupFor) {
@@ -120,7 +113,7 @@ const processIconPack = ($, options, done) => {
       .src(path.resolve(__dirname, options.stylesTemplate))
       .pipe(errorHandler())
       .pipe(consolidate('lodash', templateData))
-      .pipe(rename({ basename: options.bundleName }))
+      .pipe(rename({basename: options.bundleName}))
       .pipe(gulp.dest(options.stylesDest))
       .on('end', done);
   } else {
@@ -132,7 +125,7 @@ const processIconPack = ($, options, done) => {
       .src(path.resolve(__dirname, options.previewTemplate))
       .pipe(errorHandler())
       .pipe(consolidate('lodash', templateData))
-      .pipe(rename({ basename: options.bundleName }))
+      .pipe(rename({basename: options.bundleName}))
       .pipe(gulp.dest(options.previewDest));
   }
 };
@@ -147,22 +140,20 @@ const processIconPack = ($, options, done) => {
  *    but if 'fill' is set to this value, we replace it with 'fill=currentColor'.
  *    This trick gives us the ability to have 'dual color' icons.
  */
-const createIconPack = options => {
+module.exports = function createIconPack(options) {
   options = merge({}, defaults, options);
   return gulp
     .src(options.src)
     .pipe(errorHandler())
     .pipe(svgmin(options.svgMinOptions))
-    .pipe(rename({ prefix: `${options.className}-` }))
+    .pipe(rename({prefix: `${options.className}-`}))
     .pipe(svgStore(options.svgStoreOptions))
     .pipe(
       cheerio({
         run: ($, file, done) => processIconPack($, options, done),
-        parserOptions: { xmlMode: true },
+        parserOptions: {xmlMode: true},
       })
     )
-    .pipe(rename({ basename: options.bundleName }))
+    .pipe(rename({basename: options.bundleName}))
     .pipe(gulp.dest(options.dest));
 };
-
-module.exports = createIconPack;

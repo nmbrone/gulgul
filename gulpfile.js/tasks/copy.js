@@ -1,5 +1,5 @@
 const gulp = require('gulp');
-const errorHandler = require('../utils/error-handler');
+const errorHandler = require('../lib/error-handler');
 
 module.exports = function copy(options) {
   return gulp

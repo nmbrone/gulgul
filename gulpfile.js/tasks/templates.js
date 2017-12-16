@@ -8,7 +8,7 @@ const merge = require('lodash/merge');
 const path = require('path');
 const fs = require('fs');
 const yaml = require('js-yaml');
-const errorHandler = require('../utils/error-handler');
+const errorHandler = require('../lib/error-handler');
 
 function readLocales(dir) {
   return fs.readdirSync(dir).reduce((data, file) => {
@@ -51,7 +51,7 @@ module.exports = function renderHtml(options) {
       preserve_newlines: true,
       end_with_newline: true,
     },
-    changedOptions: { extension: '.html' },
+    changedOptions: {extension: '.html'},
   };
 
   options = merge({}, defaults, options);
@@ -72,7 +72,7 @@ module.exports = function renderHtml(options) {
         ? changed(options.dest, options.changedOptions)
         : gutil.noop()
     )
-    .pipe(frontMatter({ property: 'data' }))
+    .pipe(frontMatter({property: 'data'}))
     .pipe(nunjucksRender(options.nunjucksOptions))
     .pipe(prettify(options.prettifyOptions))
     .pipe(gulp.dest(options.dest));

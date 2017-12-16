@@ -3,7 +3,7 @@ const rev = require('gulp-rev');
 const merge = require('lodash/merge');
 const revdel = require('gulp-rev-delete-original');
 const revReplace = require('gulp-rev-replace');
-const errorHandler = require('../utils/error-handler');
+const errorHandler = require('../lib/error-handler');
 
 const defaults = {
   manifestFilename: 'asset-manifest.json',
