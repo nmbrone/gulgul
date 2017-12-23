@@ -80,8 +80,7 @@ addTask('watch', [
 addTask('build', cb => {
   const tasks = ['clean', 'icons', 'styles', 'webpack', 'views:all'];
   if (process.env.NODE_ENV === 'production') {
-    tasks.push('copy');
-    tasks.push('revision');
+    tasks.push('copy', 'revision');
   }
   return runSequence(...tasks, cb);
 });

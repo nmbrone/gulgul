@@ -2698,6 +2698,14 @@ gulp-consolidate@^0.2.0:
     consolidate "~0.14.0"
     map-stream "0.0.4"
 
+gulp-filter@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/gulp-filter/-/gulp-filter-5.0.1.tgz#5d87f662e317e5839ef7650e620e6c9008ff92d0"
+  dependencies:
+    gulp-util "^3.0.6"
+    multimatch "^2.0.0"
+    streamfilter "^1.0.5"
+
 gulp-front-matter@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/gulp-front-matter/-/gulp-front-matter-1.3.0.tgz#5ee466fbfafb33420bcd5e0267bb6819444ab06d"
@@ -4205,6 +4213,15 @@ ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
 
+multimatch@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/multimatch/-/multimatch-2.1.0.tgz#9c7906a22fb4c02919e2f5f75161b4cdbd4b2a2b"
+  dependencies:
+    array-differ "^1.0.0"
+    array-union "^1.0.1"
+    arrify "^1.0.0"
+    minimatch "^3.0.0"
+
 multipipe@^0.1.0, multipipe@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/multipipe/-/multipipe-0.1.2.tgz#2a8f2ddf70eed564dff2d57f1e1a137d9f05078b"
@@ -5702,6 +5719,12 @@ stream-throttle@^0.1.3:
   dependencies:
     commander "^2.2.0"
     limiter "^1.0.5"
+
+streamfilter@^1.0.5:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/streamfilter/-/streamfilter-1.0.7.tgz#ae3e64522aa5a35c061fd17f67620c7653c643c9"
+  dependencies:
+    readable-stream "^2.0.2"
 
 string-width@^1.0.1, string-width@^1.0.2:
   version "1.0.2"

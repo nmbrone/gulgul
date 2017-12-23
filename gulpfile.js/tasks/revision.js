@@ -1,8 +1,9 @@
 const gulp = require('gulp');
 const rev = require('gulp-rev');
-const merge = require('lodash/merge');
+const filter = require('gulp-filter');
 const revdel = require('gulp-rev-delete-original');
 const revReplace = require('gulp-rev-replace');
+const merge = require('lodash/merge');
 const errorHandler = require('../lib/error-handler');
 
 const defaults = {
@@ -11,11 +12,14 @@ const defaults = {
 
 module.exports = function revision(options) {
   options = merge({}, defaults, options);
+  const htmlFilter = filter(['**/*', '!**/*.html'], {restore: true});
   return gulp
     .src(options.src)
     .pipe(errorHandler())
+    .pipe(htmlFilter)
     .pipe(rev())
     .pipe(revdel(options.revDeleteOptions))
+    .pipe(htmlFilter.restore)
     .pipe(revReplace(options.revReplaceOptions))
     .pipe(gulp.dest(options.dest))
     .pipe(rev.manifest(options.manifestFilename, options.revOptions))
