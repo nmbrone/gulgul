@@ -1,4 +1,4 @@
-const runSequence = require('run-sequence');
+const gulp = require('gulp');
 const {addTask} = require('./lib/helpers');
 const paths = require('./paths');
 
@@ -69,22 +69,26 @@ addTask('webpack:watch', webpack, {
   webpackWatch: true,
 });
 
-addTask('watch', [
-  'icons:watch',
-  'styles:watch',
-  'views:all:watch',
-  'views:only:changed:watch',
-  'webpack:watch',
-]);
+addTask(
+  'watch',
+  gulp.parallel(
+    'icons:watch',
+    'styles:watch',
+    'views:all:watch',
+    'views:only:changed:watch',
+    'webpack:watch'
+  )
+);
 
-addTask('build', cb => {
-  const tasks = ['clean', 'icons', 'styles', 'webpack', 'views:all'];
-  if (process.env.NODE_ENV === 'production') {
-    tasks.push('copy', 'revision');
-  }
-  return runSequence(...tasks, cb);
-});
+addTask(
+  'build',
+  (() => {
+    const tasks = ['clean', 'icons', 'styles', 'webpack', 'views:all'];
+    if (process.env.NODE_ENV === 'production') {
+      tasks.push('copy', 'revision');
+    }
+    return gulp.series(...tasks);
+  })()
+);
 
-addTask('default', cb => {
-  return runSequence('clean', 'build', 'watch', 'server', cb);
-});
+addTask('default', gulp.series('clean', 'build', 'watch', 'server'));

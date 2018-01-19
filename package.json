@@ -7,6 +7,7 @@
   "author": "Sergey Snozyk <sergey.snozyk@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "gulp": "gulp",
     "start": "cross-env NODE_ENV=development gulp",
     "build": "cross-env NODE_ENV=production gulp build"
   },
@@ -21,7 +22,7 @@
     "del": "^3.0.0",
     "eslint": "^4.8.0",
     "eslint-loader": "^1.9.0",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.0",
     "gulp-changed": "^3.1.0",
     "gulp-cheerio": "^0.6.2",
     "gulp-consolidate": "^0.2.0",
@@ -43,7 +44,6 @@
     "gulp-util": "^3.0.8",
     "js-yaml": "^3.10.0",
     "lodash": "^4.17.4",
-    "run-sequence": "^2.2.0",
     "webpack": "^3.6.0"
   }
 }
