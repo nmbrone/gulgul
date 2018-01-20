@@ -1,6 +1,6 @@
 const gulp = require('gulp');
-const {addTask} = require('./lib/helpers');
 const paths = require('./paths');
+const {addTask} = require('./lib/helpers');
 
 const clean = require('./tasks/clean');
 const copy = require('./tasks/copy');
@@ -10,6 +10,9 @@ const icons = require('./tasks/icons');
 const revision = require('./tasks/revision');
 const webpack = require('./tasks/webpack');
 const templates = require('./tasks/templates');
+
+const {NODE_ENV} = process.env;
+const production = NODE_ENV === 'production';
 
 addTask('clean', clean, {
   src: [paths.dest.root, paths.src.stylesGen],
@@ -54,6 +57,9 @@ addTask('views:all', templates, {
   src: paths.src.views + '/**/[^_]*.njk',
   dest: paths.dest.views,
   watch: paths.src.views + '/**/_*.njk',
+  nunjucksOptions: {
+    path: paths.dest.styles,
+  },
 });
 
 addTask('views:only:changed', templates, {
@@ -82,13 +88,11 @@ addTask(
 
 addTask(
   'build',
-  (() => {
-    const tasks = ['clean', 'icons', 'styles', 'webpack', 'views:all'];
-    if (process.env.NODE_ENV === 'production') {
-      tasks.push('copy', 'revision');
-    }
-    return gulp.series(...tasks);
-  })()
+  gulp.series(
+    ...['clean', 'icons', 'styles', 'webpack', 'views:all'].concat(
+      production ? ['copy', 'revision'] : []
+    )
+  )
 );
 
 addTask('default', gulp.series('clean', 'build', 'watch', 'server'));

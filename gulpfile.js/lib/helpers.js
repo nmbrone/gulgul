@@ -31,7 +31,10 @@ function addTask(...args) {
 
   if (watch) {
     const glob = typeof watch === 'boolean' ? src : watch;
-    gulp.task(`${name}:watch`, () => gulp.watch(glob, [name]));
+    gulp.task(`${name}:watch`, cb => {
+      gulp.watch(glob, gulp.parallel(name));
+      cb();
+    });
   }
 
   return gulp.task(name, fn.bind(undefined, options, ...rest));
